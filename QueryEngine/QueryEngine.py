@@ -15,7 +15,7 @@ class QueryEngine:
     def __del__(self):
         self.CloseConnection()
 
-    def performQuery(self, sql_query: str):
+    def performQuery(self, sql_query: str) -> dict | None:
         if(self.conn):
             self.conn.row_factory = sqlite3.Row
             cur = self.conn.cursor()

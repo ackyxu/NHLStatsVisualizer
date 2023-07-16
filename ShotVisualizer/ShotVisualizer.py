@@ -8,7 +8,7 @@ class ShotVisualizer:
     Takes in a valid query (in list[dict]) for GamePlays
     """
     rinkImg = r"Resource\nhlrink.png"
-    shotEvents = ['STOP', 'MISSED_SHOT','BLOCKED_SHOT', 'GOAL']
+    shotEvents = ['SHOT', 'MISSED_SHOT','BLOCKED_SHOT', 'GOAL']
     def __init__(self, gamePlays: list[dict]):
         self.gamePlays = gamePlays
 
@@ -37,22 +37,25 @@ class ShotVisualizer:
         coorXs, coorYs  = [event["coorX"] for event in cleanedEvents],[event["coorY"] for event in cleanedEvents]
         eventType = [event["playType"] for event in cleanedEvents]
         im = img.imread(self.rinkImg)
-        plt.figure(figsize = (10,10))
-        plt.axis('off')
+
+        fig, ax = plt.subplots(figsize = (10,10))
+        ax.axis('off')
 
         
         if graphType in ["heat","HEAT","Heat"]:
             sns.kdeplot(x=coorYs, y=coorXs, fill=True, thresh=0.05,  alpha = 0.65)
-            implot = plt.imshow(im, extent=(-42.5,42.5,0,100))    
+            implot = ax.imshow(im, extent=(-42.5,42.5,0,100))    
 
         else:
             
-            plt.scatter(x=coorYs, y=coorXs, c="r", s=60)
-            plt.xlim(-42.5,42.5)
-            plt.ylim(0, 100)
-            plt.xticks(np.arange(-42.5,42.5+1,0.1))
-            plt.yticks(np.arange(0, 100+1,0.1))
-            implot = plt.imshow(im, extent=(-42.5,42.5,0,100))
+            ax.scatter(x=coorYs, y=coorXs, c="r", s=60)
+            ax.xlim(-42.5,42.5)
+            ax.ylim(0, 100)
+            ax.xticks(np.arange(-42.5,42.5+1,0.1))
+            ax.yticks(np.arange(0, 100+1,0.1))
+            implot = ax.imshow(im, extent=(-42.5,42.5,0,100))
+
+        return fig
 
     def processCoordinates(self, events: list[dict]):
         output = []
