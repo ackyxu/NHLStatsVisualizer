@@ -30,25 +30,35 @@ class PlayerQuery(InfoQuery):
 
         return output
     
-    def getPlayerShotPct(self) -> tuple[int,int,float]:
+    def getPlayerShotPct(self, years: list[int]|None = None) -> tuple[int,int,float]:
         sql =  (   "SELECT * "
-                    +"From GamePlays "
-                    +f"WHERE player1 = {self.playerID} ")
+                    +"From Boxscores "
+                    +f"WHERE id = {self.playerID} ")
         
-        additionSQL = []
-        for shotType in self.shotOnGoalEvents:
-             additionSQL.append(f"playType ='{shotType}' ")
-        sql += "AND (" + " OR ".join(additionSQL) + ")"
+        # additionSQL = []
+        # for shotType in self.shotOnGoalEvents:
+        #      additionSQL.append(f"playType ='{shotType}' ")
+        # sql += "AND (" + " OR ".join(additionSQL) + ")"
 
+        if years:
+            yearsSQL = "AND year IN ("
+            yearSQL = []
+            for year in years:
+                yearSQL.append(str(year))
+            yearsSQL = yearsSQL +  ",".join(yearSQL) + ")" 
         
+            sql += yearsSQL   
         results =  self.performQuery(sql)
-        totalShots = len(results)
 
+        totalShots = 0
         goals = 0
-        for event in results:
-            if event["playType"] == "GOAL": goals += 1
 
-
+        for result in results:
+            totalShots += 0 if result["shots"] == "" else int(result["shots"])
+            goals += 0 if result["goals"] == "" else int(result["goals"])
+      
+        print("Goals: %d"%goals)
+        print("Shots: %d"%totalShots)
         return (totalShots, goals, goals/totalShots)
 
 

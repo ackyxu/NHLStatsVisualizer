@@ -4,6 +4,7 @@ async function getRink() {
 	const rinkimg = await eel.CreateRinkGraph()();
 	document.getElementById("rink").src=`${rinkimg}`;
 	divTasks.innerHTML = "Done";
+	getPlayerInfo()
 }
 
 async function getPlayerInfo() {
@@ -31,7 +32,6 @@ async function getDataFromPython() {
 }
 
 document.getElementById("mybtn").addEventListener('click', async() => {
-	getPlayerInfo()
 	getRink();
 	getPlayerShots()
 })

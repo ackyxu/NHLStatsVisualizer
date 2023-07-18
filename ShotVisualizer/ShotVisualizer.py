@@ -40,19 +40,18 @@ class ShotVisualizer:
 
         fig, ax = plt.subplots(figsize = (10,10))
         ax.axis('off')
-
-        
+        ax.set_xlim(-42.5,42.5)
+        ax.set_ylim(0, 100)
+        ax.set_xticks(np.arange(-42.5,42.5+1,0.1))
+        ax.set_yticks(np.arange(0, 100+1,0.1))
+    
         if graphType in ["heat","HEAT","Heat"]:
-            sns.kdeplot(x=coorYs, y=coorXs, fill=True, thresh=0.05,  alpha = 0.65)
+            sns.kdeplot(x=coorYs, y=coorXs, fill=True, thresh=0.05,  alpha = 0.65, clip=((-42.5,42.5),(0,100)))
             implot = ax.imshow(im, extent=(-42.5,42.5,0,100))    
 
         else:
             
             ax.scatter(x=coorYs, y=coorXs, c="r", s=60)
-            ax.xlim(-42.5,42.5)
-            ax.ylim(0, 100)
-            ax.xticks(np.arange(-42.5,42.5+1,0.1))
-            ax.yticks(np.arange(0, 100+1,0.1))
             implot = ax.imshow(im, extent=(-42.5,42.5,0,100))
 
         return fig
@@ -66,7 +65,7 @@ class ShotVisualizer:
                 print(event)
                 break
             if event["coorX"] < 0:
-                event["coorY"],event["coorX"] = -event["coorY"],-event["coorX"]
+                event["coorY"],event["coorX"] = event["coorY"],-event["coorX"]
             output.append(event)
 
         return output

@@ -17,7 +17,7 @@ def main():
 def CreateRinkGraph():
     rootpath = eel._get_real_path('FrontEnd')
     pq = PlayerQuery(QE,8480012)
-    results = pq.performQuery("SELECT * From GamePlays WHERE player1 = 8480012")
+    results = pq.performQuery("SELECT * From GamePlays WHERE player1 = 8480012 AND season='20222023'")
     sv = ShotVisualizer(results)
     fig = sv.rinkPlot(sv.filterShotEvents(["GOAL"]),graphType="Heat")
     fig.savefig(os.path.join(rootpath,TEMPFOLDER,"rink.png"),bbox_inches='tight')
@@ -32,7 +32,7 @@ def GetPlayerInfo():
 def PlayerShotStats():
     rootpath = eel._get_real_path('FrontEnd')
     pq = PlayerQuery(QE,8480012)
-    shotStats = pq.getPlayerShotPct()
+    shotStats = pq.getPlayerShotPct([2022])
     spv = ShotPctVisualizer(shotStats)
     fig = spv.piePlot()
     fig.savefig(os.path.join(rootpath,TEMPFOLDER,"pie.png"),bbox_inches='tight')
