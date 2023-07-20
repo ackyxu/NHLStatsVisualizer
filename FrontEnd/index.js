@@ -8,9 +8,13 @@ async function getRink() {
 }
 
 async function getPlayerInfo() {
-	const location = document.getElementById("playerinfo")
+	const playerName = document.getElementById("playerName")
+	const playerID = document.getElementById("pid")
+	const playerPosition = document.getElementById("position")
 	const playerinfo = await eel.GetPlayerInfo()();
-	location.innerHTML = playerinfo;
+	playerName.innerHTML = playerinfo[0];
+	playerID.innerHTML = playerinfo[1];
+	playerPosition.innerHTML = playerinfo[2];
 }
 
 async function getPlayerShots() {
@@ -27,6 +31,21 @@ async function getPlayerShots() {
 	shotPie.src=`${results[1]}`
 }
 
+async function getNormalDist() {
+	const goalsDist = document.getElementById("goalsDist")
+	const pointsDist = document.getElementById("pointsDist")
+	// const hitsDist = document.getElementById("hitsDist")
+
+
+	const goalsPlot = await eel.NormalDistGraphs("goals")()
+	const pointsPlot = await eel.NormalDistGraphs("points")()
+	// const hitsPlot = await eel.NormalDistGraphs("hits")()
+
+	goalsDist.src=`${goalsPlot}`
+	pointsDist.src=`${pointsPlot}`
+	// hitsDist.src=`${hitsPlot}`
+}
+
 async function getDataFromPython() {
 	document.getElementById('myele').innerText = await eel.get_data()();
 }
@@ -34,6 +53,7 @@ async function getDataFromPython() {
 document.getElementById("mybtn").addEventListener('click', async() => {
 	getRink();
 	getPlayerShots()
+	getNormalDist()
 })
 
 
