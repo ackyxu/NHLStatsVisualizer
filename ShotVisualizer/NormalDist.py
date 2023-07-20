@@ -4,7 +4,7 @@ import numpy as np
 
 class NormalDist:
 
-    def createPDFDist(self, field: str, results: list[dict], playerStats: int | None = None):
+    def createPDFDist(self, field: str, results: list[dict], playerStats: int | float | None = None):
 
         fieldStr = str.upper(field[0])+field[1:]
         fig, ax = plt.subplots(figsize = (10,5))
@@ -14,7 +14,8 @@ class NormalDist:
         sd = np.std(valList)
         dist = norm.pdf(valList,mean,sd)
         offsets = max(dist) / 10
-        ax.set_xlim(0,valList[-1] + 10)
+        
+        ax.set_xlim(0,valList[-1])
         ax.set_ylim((0-2*offsets),(max(dist) + 1.5 * offsets))
 
 
@@ -22,7 +23,7 @@ class NormalDist:
         bbox = dict(boxstyle ="round", fc ="0.8")
 
         ax.vlines(x=mean,ymin=-offsets,ymax = max(dist), color = "blue")
-        ax.annotate("Mean (%s): %d"%(fieldStr,mean),
+        ax.annotate("Mean (%s): %.2f"%(fieldStr,mean),
                     (mean,-offsets),
                     bbox = bbox,
                     ha='center')
@@ -37,7 +38,7 @@ class NormalDist:
                         ha='center')
             ax.fill_between(valList,dist, where=((valList >= valList[0]) & (valList <= playerStats)), color="lightblue", alpha=0.5)
 
-            ax.annotate("Total %s: %d"%(fieldStr,playerStats),
+            ax.annotate("Total %s: %d"%(fieldStr,playerStats) if type(playerStats) == int else "Total %s: %.2f"%(fieldStr,playerStats),
                     (playerStats,prob/2),
                     xytext =(playerStats+(valList[-1]+valList[0])/50,prob/2),
                     bbox = bbox,

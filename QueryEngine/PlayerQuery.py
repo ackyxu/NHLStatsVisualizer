@@ -9,7 +9,7 @@ class PlayerQuery(InfoQuery):
         self.playerID = playerID
         self.years = years
         self.getQuery()
-        print (self.retrievedInfo)
+
         
     def getPlayerInfo(self, html = False) -> tuple[str,int,str]:
         sql = f"SELECT * From Players WHERE id = {self.playerID}"
@@ -35,8 +35,7 @@ class PlayerQuery(InfoQuery):
 
     def getQuery(self):
 
-        sql =  " ".join([   "SELECT id, year,COUNT(id) AS gp, SUM(goals) AS goals, SUM(assists) AS assists, (SUM(goals) + SUM(assists)) AS points, SUM(shots) AS shots, SUM(hits) AS hits, SUM(faceOffWins) AS faceOffWins, \
-                            SUM(faceOffTaken) AS faceOffTaken, SUM(takeaways) AS takeaways, SUM(giveaways) AS giveaways",
+        sql =  " ".join([   self.selectLine+" ,year",
 
                             "FROM Boxscores",
 
@@ -53,7 +52,7 @@ class PlayerQuery(InfoQuery):
             sql += yearsSQL 
         sql +=  " GROUP BY id,year;"  
         self.retrievedInfo =  self.performQuery(sql)
-
+        self.additionalAgg()
         
     def getPlayerGoals(self) -> int:
         goals = 0
@@ -83,12 +82,16 @@ class PlayerQuery(InfoQuery):
     
     def getPlayerShotPct(self) -> tuple[int,int,float]:
 
-        goals = self.getPlayerGoals()
-        totalShots = self.getPlayerShots()
+        # goals = self.getPlayerGoals()
+        # totalShots = self.getPlayerShots()
 
-        print("Goals: %d"%goals)
-        print("Shots: %d"%totalShots)
-        return (totalShots, goals, goals/totalShots)
+        # print("Goals: %d"%goals)
+        # print("Shots: %d"%totalShots)
+        result = self.getResults()[0]
+        goals = result["goals"]
+        totalShots = result["shots"]
+        pct = result["ShootingPct"]
+        return (totalShots, goals, pct)
 
 
 

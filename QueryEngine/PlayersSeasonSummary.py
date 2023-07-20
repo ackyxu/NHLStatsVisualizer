@@ -12,9 +12,7 @@ class PlayerSeasonSummary(InfoQuery):
 
     def getQuery(self, positionType: str|None = None, positionName: str|None = None):
 
-        sql =  [    "SELECT id, year,COUNT(id) AS gp, SUM(goals) AS goals, SUM(assists) AS assists, (SUM(goals) + SUM(assists)) AS points, SUM(shots) AS shots, SUM(hits) AS hits, SUM(faceOffWins) AS faceOffWins, \
-                    SUM(faceOffTaken) AS faceOffTaken, SUM(takeaways) AS takeaways, SUM(giveaways) AS giveaways",
-
+        sql =  [    self.selectLine+" ,year",
                     "FROM Boxscores",]
 
         if self.years:
@@ -44,8 +42,8 @@ class PlayerSeasonSummary(InfoQuery):
         sql.append("GROUP BY year;")
         
         sql = " ".join(sql)
-        print(sql)
         self.retrievedInfo =  self.performQuery(sql)
+        self.additionalAgg()
 
         
     def getPlayerGoals(self) -> int:

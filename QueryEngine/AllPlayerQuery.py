@@ -11,13 +11,10 @@ class AllPlayerQuery(InfoQuery):
 
 
     def getQuery(self, positionType: str|None = None, positionName: str|None = None, by_year: bool = False):
+        sql = [self.selectLine]
         if by_year:
-            sql =  [ "SELECT id, year,COUNT(id) AS gp, SUM(goals) AS goals, SUM(assists) AS assists, (SUM(goals) + SUM(assists)) AS points, SUM(shots) AS shots, SUM(hits) AS hits, SUM(faceOffWins) AS faceOffWins, SUM(faceOffTaken) AS faceOffTaken, SUM(takeaways) AS takeaways, SUM(giveaways) AS giveaways",
-                    "FROM Boxscores",]
-        else:
-            sql = [ "SELECT id, COUNT(id) AS gp, SUM(goals) AS goals, SUM(assists) AS assists, (SUM(goals) + SUM(assists)) AS points, SUM(shots) AS shots, SUM(hits) AS hits, SUM(faceOffWins) AS faceOffWins, SUM(faceOffTaken) AS faceOffTaken, SUM(takeaways) AS takeaways, SUM(giveaways) AS giveaways",
-                    "FROM Boxscores",]
-
+            sql[0] =  sql[0]+",year"
+        sql.append("FROM Boxscores")
         if self.years:
             if type(self.years) == list:
                 yearsSQL = ["WHERE year IN ("]
@@ -52,8 +49,11 @@ class AllPlayerQuery(InfoQuery):
             sql.append("GROUP BY id")
             
         sql.append(";")
+
         sql = " ".join(sql)
+
         self.retrievedInfo =  self.performQuery(sql)
+        self.additionalAgg()
 
         
     def getPlayerGoals(self) -> int:
