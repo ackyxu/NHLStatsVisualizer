@@ -1,5 +1,5 @@
 async function getRink() {
-	const divTasks = document.getElementById('msg')
+	const divTasks = document.getElementById(`msg`)
 	divTasks.innerHTML = "Waiting for the rink to populate, might take a while"
 	const rinkimg = await eel.CreateRinkGraph()();
 	document.getElementById("rink").src=`${rinkimg}`;
@@ -17,19 +17,62 @@ async function getPlayerInfo() {
 	playerPosition.innerHTML = playerinfo[2];
 }
 
-async function getPlayerShots() {
-	const totalshots = document.getElementById("totalshots")
-	const goals = document.getElementById("totalgoals")
-	const shotspct = document.getElementById("shotpct")
-	// const shotPie = document.getElementById("shotPie")
+async function GetPlayerSeasonSummary() {
+
+	const statsTable = document.getElementById("statsTable")
+	var content = "<table>"
+
+	content += "<tr>"+
+				"<th>Year</th>"+
+				"<th>Game Played</th>"+
+				"<th>Goals</th>"+
+				"<th>Assists</th>"+
+				"<th>Points</th>"+
+				"<th>Shots</th>"+
+				"<th>Goals Per Game</th>"+
+				"<th>Points Per Game</th>"+
+				"<th>Shooting%</th>"+
+				"</tr>"
 	
-	const results = await eel.PlayerShotStats()()
+	const resultsDict = await eel.GetPlayerSeasonSummary()();
+	console.log(resultsDict)
+	for (const result of resultsDict) {
+		console.log(result)
+		content += `<tr>`+
+		`<td>${result['year']}</td>`+
+		`<td>${result['gp']}</td>`+
+		`<td>${result['goals']}</td>`+
+		`<td>${result['assists']}</td>`+
+		`<td>${result['points']}</td>`+
+		`<td>${result['shots']}</td>`+
+		`<td>${result['GoalsPerGame'].toFixed(2)}</td>`+
+		`<td>${result['PointsPerGame'].toFixed(2)}</td>`+
+		`<td>${(result['ShootingPct']*100).toFixed(2)}%</td>`+
+		"</tr>"
+		
+
+	}
+
 	
-	totalshots.innerHTML = `Total Shots: ${results[0][0]}    `
-	goals.innerHTML = `Total Goals: ${results[0][1]}    `
-	shotspct.innerHTML = `Shooting Pct: ${(results[0][2]*100).toFixed(2)}%`
-	// shotPie.src=`${results[1]}`
+	content += "</table>"
+
+
+	statsTable.innerHTML = content
 }
+
+// async function getPlayerShots() {
+// 	const totalshots = document.getElementById("totalshots")
+// 	const goals = document.getElementById("totalgoals")
+// 	const shotspct = document.getElementById("shotpct")
+// 	// const shotPie = document.getElementById("shotPie")
+	
+// 	const results = await eel.PlayerShotStats()()
+	
+// 	totalshots.innerHTML = `Total Shots: ${results[0][0]}    `
+// 	goals.innerHTML = `Total Goals: ${results[0][1]}    `
+// 	shotspct.innerHTML = `Shooting Pct: ${(results[0][2]*100).toFixed(2)}%`
+// 	// shotPie.src=`${results[1]}`
+// }
 
 async function getNormalDist() {
 	const goalsDist = document.getElementById("dist1")
@@ -47,17 +90,18 @@ async function getNormalDist() {
 }
 
 async function getDataFromPython() {
-	document.getElementById('myele').innerText = await eel.get_data()();
+	document.getElementById(`myele`).innerText = await eel.get_data()();
 }
 
-document.getElementById("mybtn").addEventListener('click', async() => {
-	getRink();
-	getPlayerShots()
-	getNormalDist()
-})
+window.onload = async() => {
+	await GetPlayerSeasonSummary() 
+	await getRink();
+	// getPlayerShots()
+	await getNormalDist()
+}
 
 
-document.getElementById("sendbtn").addEventListener('click', async() => {
-	await eel.delete(document.getElementById('taskinp').value)
-	getTasks();
-})
+// document.getElementById("sendbtn").addEventListener(`click`, async() => {
+// 	await eel.delete(document.getElementById(`taskinp`).value)
+// 	getTasks();
+// })

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="'en">
+	<head>
+		<meta charset="="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE-edge">
+		<meta name="viewport" content="width-device-width, initial-scal=1.0">
+		<link rel="stylesheet" href="style.css"
+	</head>
+	<body>
+		<div id="selectYear">
+			<p>Enter the Year</p>
+			<select id="yeartobeselected"></select>
+			<button id="yearButton"> Select Year </button>
+		</div>
+		<div id="selectTeam">
+			<p>Select Team</p>
+			<select id="teamList">
+				<option> ---Please Enter a Year First--- </option>
+			</select>
+			<button id="teamButton"> Select Team </button>
+		</div>
+		<div id="selectPlayer">
+			<p>Select a Player</p>
+			<select id="rosterList">
+				<option> ---Please Enter a Year and Team First--- </option>
+			</select>
+			<button id="playerButton"> Select Player </button>
+		</div>
+
+		<div id="confirmation" style="display: none;">
+			<br>
+			<br>
+			<span>Do you wish to create a report for:</span>
+			<span id="confirmationPlayer"></span>
+			<br>
+			<button id="reportButton"> Create Report For Player </button>
+		</div>
+
+
+
+
+	</body>
+	<script type="text/javascript" src="/eel.js"></script>
+	<script src="FowardSelect.js"></script>
