@@ -1,10 +1,10 @@
 from QueryEngine.QueryEngine import QueryEngine
-from .InfoQuery import InfoQuery
+from QueryEngine.SummaryInfoQuery import SummaryInfoQuery
 
 
-class PlayerSeasonSummary(InfoQuery):
-    shotOnGoalEvents = ['SHOT','BLOCKED_SHOT','GOAL']
-    def __init__(self, qe: QueryEngine, years: list[int]|None, positionType: str|None = None, positionName: str|None = None) -> None:
+class PlayerSeasonSummary(SummaryInfoQuery):
+
+    def __init__(self, qe: QueryEngine, years: int|list[int]|None, positionType: str|None = None, positionName: str|None = None) -> None:
         super().__init__(qe)
         self.years = years
         self.getQuery(positionName=positionName,positionType=positionType)
@@ -12,16 +12,21 @@ class PlayerSeasonSummary(InfoQuery):
 
     def getQuery(self, positionType: str|None = None, positionName: str|None = None):
 
-        sql =  [    self.selectLine+" ,year",
+        sql =  [self.selectLine+" ,year",
                     "FROM Boxscores",]
 
         if self.years:
-            yearsSQL = ["WHERE year IN ("]
-            yearSQL = []
-            for year in self.years:
-                yearSQL.append(str(year))
-            yearsSQL.append(",".join(yearSQL))
-            yearsSQL.append( ")" )
+
+            if type(self.years) == int:
+                 yearsSQL = [f"WHERE year = {self.years}"]
+
+            else:
+                yearsSQL = ["WHERE year IN ("]
+                yearSQL = []
+                for year in self.years:
+                    yearSQL.append(str(year))
+                yearsSQL.append(",".join(yearSQL))
+                yearsSQL.append( ")" )
             sql += yearsSQL 
 
         
@@ -37,11 +42,14 @@ class PlayerSeasonSummary(InfoQuery):
                 filterSQL.append(f"id IN (SELECT id FROM Players WHERE positionName='{positionName}')")
             elif positionType:
                 filterSQL.append(f"id IN (SELECT id FROM Players WHERE positionType='{positionType}')")
-            sql += filterSQL
+            else:
+                filterSQL=[f"id = {self.id}"]
+        sql += filterSQL
 
-        sql.append("GROUP BY year;")
+        # sql.append("GROUP BY year;")
         
         sql = " ".join(sql)
+        print(sql)
         self.retrievedInfo =  self.performQuery(sql)
         self.additionalAgg()
 

@@ -13,34 +13,62 @@
 		<div id="msg"> Rink Not Created Yet </div>
 		<br>
 		<br>
-		<h1 id="playerName" style="padding-left: 10px;"></h1>
-		<div class="header">
-			<h2 id ="position"></h2> 
-			<span id="pid"></span>
-		</div>
-		<div id="statsTable"></div>
-		<div class="ppgPlot">
-			<img src="" id="dist2"/>
-		</div>
+		<div class="header" style="border-bottom: 1px solid #000;">
+
+			<div class="column" style="float:left;">
+				<div class="row" style="float:left;">
+					<h1 id="playerName""></h1>
+				</div>
+				<div class="row" style="float:left;">
+					<h2 id ="position"></h2> 
+				</div>
+			</div>
+
+			<div class="column" >
+				<div class="row" id="playerInfo1" style="float:right;"></div>
+				<div class="row" id="playerInfo2" style="float:right;"></div>
+			</div>
 	
+		</div>
+
+	
+		<div id="statsTable" style="padding-top: 2vh;"></div>
+
+		
+		<!-- <div class="ppgPlot">
+			
+		</div> -->
+		<div >
+			<img src="" id="guideDiv" style="padding-top: 2vh; margin-left: auto; margin-right: auto; height: 8vh;display: block;">
+		</div>
+
+		<div class="row">
+			<div class="column">
+				<div class="row"><img src="" id="dist1"/></div>
+				<div class="row"><img src="" id="dist2"/></div>
+
+				
+			</div>
+			<div class="column">
+				<div class="row"><img src="" id="dist3"/></div>
+				<div class="row"><img src="" id="dist4"/></div>
+			</div>
+
+
+				
+		</div>
+
 
 		<div class="row">
 			<div class="column">
 				<img src="" id="rink"/>
 			</div>
+
 			<div class="column">
-				<div class="row"><img src="" id="dist1"/></div>
-				<div class="row"><img src="" id="dist3"/></div>
-				
+				<img src="" id="ssp"/>
 			</div>
-				
 		</div>
 
-	
-
-	
-			
-		
 	
 	</body>
 	<script type="text/javascript" src="/eel.js"></script>

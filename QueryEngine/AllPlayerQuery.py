@@ -1,8 +1,9 @@
 from QueryEngine.QueryEngine import QueryEngine
+from QueryEngine.SummaryInfoQuery import SummaryInfoQuery
 from .InfoQuery import InfoQuery
 
 
-class AllPlayerQuery(InfoQuery):
+class AllPlayerQuery(SummaryInfoQuery):
     shotOnGoalEvents = ['SHOT','BLOCKED_SHOT','GOAL']
     def __init__(self, qe: QueryEngine, years: int|list[int]|None, positionType: str|None = None, positionName: str|None = None, by_year: bool = False) -> None:
         super().__init__(qe)
@@ -42,16 +43,16 @@ class AllPlayerQuery(InfoQuery):
             elif positionType:
                 filterSQL.append(f"id IN (SELECT id FROM Players WHERE positionType='{positionType}')")
             sql += filterSQL
-
+        
         if by_year:
             sql.append("GROUP BY id,year")
         else:
             sql.append("GROUP BY id")
-            
+
+        sql.append("HAVING gp >= 20")
         sql.append(";")
 
         sql = " ".join(sql)
-
         self.retrievedInfo =  self.performQuery(sql)
         self.additionalAgg()
 

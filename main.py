@@ -1,4 +1,7 @@
 import eel
+from QueryEngine.PlayerEventQuery import PlayerEventQuery
+from ShotVisualizer.BarGraph import BarGraph
+from ShotVisualizer.Graphs import Graphs
 from ShotVisualizer.ShotVisualizer import ShotVisualizer
 from ShotVisualizer.ShotPctVisualizer import ShotPctVisualizer
 from QueryEngine.QueryEngine import QueryEngine
@@ -16,6 +19,7 @@ PORT = "8000"
 QE = None
 PQ = None
 APQ = None
+PEQ = None
 
 YEAR = None
 ID = None
@@ -26,13 +30,27 @@ def main():
 @eel.expose
 def CreateRinkGraph():
     rootpath = eel._get_real_path('FrontEnd')
-    # if PQ is None:
-    #     PQ = PlayerQuery(QE,8480012,[2022])
-    results = PQ.performQuery(f"SELECT * From GamePlays WHERE player1 = {ID} AND season='{YEAR}{YEAR+1}'")
-    sv = ShotVisualizer(results)
-    fig = sv.rinkPlot(sv.filterShotEvents(["GOAL"]),graphType="Heat")
+    sv = ShotVisualizer(PEQ.getShotsQuery(['GOAL']))
+    fig = sv.rinkPlot(graphType="Heat")
     fig.savefig(os.path.join(rootpath,TEMPFOLDER,"rink.png"),bbox_inches='tight')
     return f'http://{HOST}:{PORT}/{TEMPFOLDER}/rink.png'
+
+@eel.expose
+def CreateShotSelectionPie():
+    rootpath = eel._get_real_path('FrontEnd')
+    sv = ShotVisualizer(PEQ.getShotsQuery(['GOAL']))
+    fig = sv.ShotTypePie()
+    fig.savefig(os.path.join(rootpath,TEMPFOLDER,"ssp.png"),bbox_inches='tight')
+    return f'http://{HOST}:{PORT}/{TEMPFOLDER}/ssp.png'
+    
+
+@eel.expose
+def CreatePercentileGuide():
+    rootpath = eel._get_real_path('FrontEnd')
+    g = Graphs()
+    fig = g.CreatePercentileGuide()
+    fig.savefig(os.path.join(rootpath,TEMPFOLDER,"pctguide.png"),bbox_inches='tight')
+    return f'http://{HOST}:{PORT}/{TEMPFOLDER}/pctguide.png'
 
 @eel.expose
 def GetPlayerSeasonSummary():
@@ -56,14 +74,14 @@ def PlayerShotStats():
     return (shotStats,f'http://{HOST}:{PORT}/{TEMPFOLDER}/pie.png')
 
 @eel.expose
-def NormalDistGraphs(field: str)->str:
+def StatsGraph(field: str, alignLeft=False)->str:
     rootpath = eel._get_real_path('FrontEnd')
     # if APQ is None:
     #     APQ = AllPlayerQuery(QE,2022, positionType="Forward")
     # if PQ is None: 
     #     PQ = PlayerQuery(QE,8480012, [2022])
-    nd = NormalDist()
-    fig = nd.createPDFDist(field,APQ.getResults(), PQ.getResults()[0][field])
+    nd = BarGraph()
+    fig = nd.CreateGraph(field,APQ.getResults(), PQ.getResultsLatest()[field], alignLeft=alignLeft)
     fig.savefig(os.path.join(rootpath,TEMPFOLDER,"nd_%s_%d.png"%(field,ID)),bbox_inches='tight')
     return f'http://{HOST}:{PORT}/{TEMPFOLDER}/nd_{field}_{ID}.png'
         
@@ -91,10 +109,11 @@ def setPlayerYearID(year:int,id:int):
 
 @eel.expose
 def createFowardReportCard(year:int, id:int):
-    global PQ,APQ,YEAR,ID
+    global PQ,APQ,YEAR,ID,PEQ
     YEAR = int(year)
     ID = int(id)
-    PQ = PlayerQuery(QE,id,[year])
+    PQ = PlayerQuery(QE,id,list(range(YEAR-2,YEAR+1)))
+    PEQ = PlayerEventQuery(QE, ID, YEAR)
     APQ =  AllPlayerQuery(QE,year, positionType="Forward")
     eel.show("index.html")
 

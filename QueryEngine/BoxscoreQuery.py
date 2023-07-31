@@ -1,6 +1,7 @@
-from QueryEngine.InfoQuery import InfoQuery
+from QueryEngine.SummaryInfoQuery import SummaryInfoQuery
 from .QueryEngine import QueryEngine
-class BoxscoreQuery(InfoQuery):
+
+class BoxscoreQuery(SummaryInfoQuery):
 
     def __init__(self, qe: QueryEngine) -> None:
         super().__init__(qe)

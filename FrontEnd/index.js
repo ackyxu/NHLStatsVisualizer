@@ -4,17 +4,55 @@ async function getRink() {
 	const rinkimg = await eel.CreateRinkGraph()();
 	document.getElementById("rink").src=`${rinkimg}`;
 	divTasks.innerHTML = "Done";
-	getPlayerInfo()
+	
+}
+
+
+async function getSSP() {
+	const ssp = document.getElementById("ssp")
+	const sspImg = await eel.CreateShotSelectionPie()()
+	ssp.src=`${sspImg}`
+}
+
+async function CreatePercentileGuide() {
+	const guideDiv = document.getElementById("guideDiv")
+	const guideImg = await eel.CreatePercentileGuide()();
+
+	guideDiv.src=`${guideImg}`
 }
 
 async function getPlayerInfo() {
 	const playerName = document.getElementById("playerName")
 	const playerID = document.getElementById("pid")
 	const playerPosition = document.getElementById("position")
+	const playerInfoRow1 = document.getElementById("playerInfo1")
+	const playerInfoRow2 = document.getElementById("playerInfo2")
 	const playerinfo = await eel.GetPlayerInfo()();
+
+
+
+	const response = await fetch(`https://statsapi.web.nhl.com/api/v1/people/${playerinfo[1]}`);
+	const playerJSON = await (response.json());
+	const birthCity = playerJSON["people"][0]["birthCity"];
+	let birthStateProvince= playerJSON["people"][0]["birthStateProvince"];
+	if (birthStateProvince === undefined){
+		birthStateProvince = playerJSON["people"][0]["birthCountry"];
+	}
+	
+	const birthDate = playerJSON["people"][0]["birthDate"];
+	const weight = playerJSON["people"][0]["weight"];
+	const height = playerJSON["people"][0]["height"];
+	const shoots = playerJSON["people"][0]["shootsCatches"];
+	
 	playerName.innerHTML = playerinfo[0];
-	playerID.innerHTML = playerinfo[1];
-	playerPosition.innerHTML = playerinfo[2];
+	// playerID.innerHTML = playerinfo[1];
+	playerPosition.innerHTML = `Postition: ${playerinfo[2]} &emsp; Shoots: ${shoots}`;
+
+	const row1 = `Born: ${birthDate} &emsp; ${birthCity},${birthStateProvince}`
+	const row2 = `Weight: ${weight}lbs &emsp; Height: ${height} &emsp; Player ID: ${playerinfo[1]}`
+	playerInfoRow1.innerHTML = row1;
+	playerInfoRow2.innerHTML = row2;
+
 }
 
 async function GetPlayerSeasonSummary() {
@@ -29,13 +67,13 @@ async function GetPlayerSeasonSummary() {
 				"<th>Assists</th>"+
 				"<th>Points</th>"+
 				"<th>Shots</th>"+
-				"<th>Goals Per Game</th>"+
-				"<th>Points Per Game</th>"+
+				"<th>Goals Per 60</th>"+
+				"<th>Points Per 60</th>"+
 				"<th>Shooting%</th>"+
+				"<th>ATOI</th>"+
 				"</tr>"
 	
 	const resultsDict = await eel.GetPlayerSeasonSummary()();
-	console.log(resultsDict)
 	for (const result of resultsDict) {
 		console.log(result)
 		content += `<tr>`+
@@ -45,9 +83,10 @@ async function GetPlayerSeasonSummary() {
 		`<td>${result['assists']}</td>`+
 		`<td>${result['points']}</td>`+
 		`<td>${result['shots']}</td>`+
-		`<td>${result['GoalsPerGame'].toFixed(2)}</td>`+
-		`<td>${result['PointsPerGame'].toFixed(2)}</td>`+
+		`<td>${result['Goals_Per_60'].toFixed(2)}</td>`+
+		`<td>${result['Points_Per_60'].toFixed(2)}</td>`+
 		`<td>${(result['ShootingPct']*100).toFixed(2)}%</td>`+
+		`<td>${Math.floor((result['Avg_Time_On_Ice'])/60)}:${Math.floor((result['Avg_Time_On_Ice'])%60)}</td>`+
 		"</tr>"
 		
 
@@ -75,18 +114,22 @@ async function GetPlayerSeasonSummary() {
 // }
 
 async function getNormalDist() {
-	const goalsDist = document.getElementById("dist1")
-	const pointsDist = document.getElementById("dist2")
-	const dist3 = document.getElementById("dist3")
+	const graph1 = document.getElementById("dist1")
+	const graph2 = document.getElementById("dist2")
+	const graph3 = document.getElementById("dist3")
+	const graph4 = document.getElementById("dist4")
 
 
-	const goalsPlot = await eel.NormalDistGraphs("GoalsPerGame")()
-	const pointsPlot = await eel.NormalDistGraphs("PointsPerGame")()
-	const plot3 = await eel.NormalDistGraphs("ShootingPct")()
+	const plot1 = await eel.StatsGraph("Goals_Per_60")()
+	const plot2 = await eel.StatsGraph("Points_Per_60")()
+	const plot3 = await eel.StatsGraph("ShootingPct", alignLeft=true)()
+	const plot4 = await eel.StatsGraph("Avg_Time_On_Ice",alignLeft=true)()
 
-	goalsDist.src=`${goalsPlot}`
-	pointsDist.src=`${pointsPlot}`
-	dist3.src=`${plot3}`
+	graph1.src=`${plot1}`
+	graph2.src=`${plot2}`
+	graph3.src=`${plot3}`
+	graph4.src=`${plot4}`
+	
 }
 
 async function getDataFromPython() {
@@ -94,10 +137,14 @@ async function getDataFromPython() {
 }
 
 window.onload = async() => {
-	await GetPlayerSeasonSummary() 
+	await GetPlayerSeasonSummary()
+	await getPlayerInfo()
+	await getNormalDist() 
+	await CreatePercentileGuide()
 	await getRink();
+	await getSSP();
 	// getPlayerShots()
-	await getNormalDist()
+	
 }
 
 

@@ -1,8 +1,8 @@
-from .InfoQuery import InfoQuery
+from QueryEngine.SummaryInfoQuery import SummaryInfoQuery
 from .QueryEngine import QueryEngine
 
 
-class PlayerQuery(InfoQuery):
+class PlayerQuery(SummaryInfoQuery):
     shotOnGoalEvents = ['SHOT','BLOCKED_SHOT','GOAL']
     def __init__(self, qe: QueryEngine, playerID:int, years: list[int]|None) -> None:
         super().__init__(qe)
@@ -52,6 +52,7 @@ class PlayerQuery(InfoQuery):
             sql += yearsSQL 
         sql +=  " GROUP BY id,year;"  
         self.retrievedInfo =  self.performQuery(sql)
+        self.retrievedInfo.sort(key=lambda d: d['year'])
         self.additionalAgg()
         
     def getPlayerGoals(self) -> int:

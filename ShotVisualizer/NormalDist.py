@@ -1,8 +1,12 @@
 import matplotlib.pyplot as plt
 from scipy.stats import norm
 import numpy as np
+import seaborn as sns
 
 class NormalDist:
+
+    def CreateGraph(self, field: str, results: list[dict], playerStats: int | float | None = None):
+        return self.createPDFDist(field,results,playerStats)
 
     def createPDFDist(self, field: str, results: list[dict], playerStats: int | float | None = None):
 
@@ -49,4 +53,23 @@ class NormalDist:
         ax.spines[['right', 'top']].set_visible(False)
 
         return fig
+
+    def createBarGraphel(self, field: str, results: list[dict], playerStats: int | float | None = None):
+        fieldStr = str.upper(field[0])+field[1:]
+        fig, ax = plt.subplots(figsize = (10,2))
+        valList = np.array([result[field] for result in results])
+        valList.sort()
+        mean = np.mean(valList)
+        sd = np.std(valList)
+        ax.set_xlim(0,valList[-1])
+        ax.invert_xaxis()
+        ax.barh ([0,1], [mean,playerStats], color=["grey","black"],align='edge')
+        ax.set(yticks = [],xticks = [])
+        ax.spines[['right', 'top','bottom','left']].set_visible(False)
+        return fig
+
+        
+
+
+        
         
