@@ -24,6 +24,8 @@ PEQ = None
 YEAR = None
 ID = None
 
+DBLOCATION = r"H:/database.db"
+
 def main():
     CreateRinkGraph()
 
@@ -121,7 +123,7 @@ def createFowardReportCard(year:int, id:int):
     
 if __name__ == "__main__":
     # main()
-    QE = QueryEngine(r"H:/database.db")
+    QE = QueryEngine(DBLOCATION)
     # PQ = PlayerQuery(QE,8480012,[2022])
     # APQ =  AllPlayerQuery(QE,2022, positionType="Forward")
     BQ = BoxscoreQuery(QE)
