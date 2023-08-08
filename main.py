@@ -9,6 +9,7 @@ from QueryEngine.PlayerQuery import PlayerQuery
 from QueryEngine.AllPlayerQuery import AllPlayerQuery
 from ShotVisualizer.NormalDist import NormalDist
 from QueryEngine.BoxscoreQuery import BoxscoreQuery
+from FrontEnd.Python.OpenFileDialog import OpenFileDialog
 import os
 
 
@@ -24,7 +25,7 @@ PEQ = None
 YEAR = None
 ID = None
 
-DBLOCATION = r"H:/database.db"
+DBLOCATION = ""
 
 def main():
     CreateRinkGraph()
@@ -123,9 +124,14 @@ def createFowardReportCard(year:int, id:int):
     
 if __name__ == "__main__":
     # main()
+    op = OpenFileDialog(os.path.dirname(os.path.abspath(__file__)))
+    DBLOCATION = op.OpenDialog()
+    print(DBLOCATION)
     QE = QueryEngine(DBLOCATION)
+
     # PQ = PlayerQuery(QE,8480012,[2022])
     # APQ =  AllPlayerQuery(QE,2022, positionType="Forward")
     BQ = BoxscoreQuery(QE)
+    
     eel.init('FrontEnd')
     eel.start('FowardSelect.html')
